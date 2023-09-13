@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ListService } from './list.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable } from 'rxjs';
+import { Observable, Subject, map, startWith, switchMap } from 'rxjs';
 import { Todo } from './models';
 @Component({
   selector: 'scx-list',
@@ -9,13 +8,27 @@ import { Todo } from './models';
   styleUrls: ['./list.component.scss'],
 })
 export class ListComponent {
+  private searchTerm$ = new Subject<string>();
   todos$: Observable<Todo[]>;
 
   constructor(private listService: ListService) {
-    this.todos$ = this.listService.getList();
+    this.todos$ = this.searchTerm$.pipe(
+      startWith(''), // Start with no filter
+      switchMap((term: string) =>
+        this.listService
+          .getList()
+          .pipe(
+            map((todos) =>
+              todos.filter((todo) =>
+                todo.title.toLowerCase().includes(term.toLowerCase())
+              )
+            )
+          )
+      )
+    );
   }
 
   filter(searchTerm: string) {
-    console.log(searchTerm);
+    this.searchTerm$.next(searchTerm);
   }
 }

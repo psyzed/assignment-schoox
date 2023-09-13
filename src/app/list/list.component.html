@@ -1,4 +1,22 @@
-<scx-search (search)="filter($event)"></scx-search>
-<pre>
-  {{ todos$ | async | json }}
-</pre>
+<div class="container">
+  <div class="search-form">
+    <scx-search (search)="filter($event)"></scx-search>
+  </div>
+  <ul class="todo-list">
+    <li
+      class="todo-item flex"
+      *ngFor="let todo of todos$ | async; let i = index"
+    >
+      <span>{{ i + 1 }}.</span>
+      <span class="title">{{ todo.title }}</span>
+      <span
+        class="status"
+        [ngClass]="{
+          completed: todo.completed,
+          'not-completed': !todo.completed
+        }"
+        >{{ todo.completed ? "Completed" : "Not Completed" }}</span
+      >
+    </li>
+  </ul>
+</div>

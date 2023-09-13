@@ -2,6 +2,7 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 
 html {
@@ -9,17 +10,17 @@ html {
 }
 
 body {
-  line-height: 1;
   font-weight: 400;
   color: #555;
+  overflow: hidden;
 }
 
-.margin-0 {
-  margin: 0;
+.flex {
+  display: flex;
 }
 
-.mg-bottom-small {
-  margin-bottom: 2rem;
+.justify-center {
+  justify-content: center;
 }
 
 .grid {
