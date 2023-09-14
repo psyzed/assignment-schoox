@@ -2,11 +2,27 @@
   <div class="search-form">
     <scx-search (search)="filter($event)"></scx-search>
   </div>
-  <ul class="todo-list">
-    <li
-      class="todo-item flex"
-      *ngFor="let todo of todos$ | async; let i = index"
-    >
+  <div
+    *ngIf="isLoading$ | async"
+    class="Loader flex justify-center align-center"
+  >
+    <p>Loading Todos...</p>
+  </div>
+  <div
+    *ngIf="hasError$ | async"
+    class="error-msg flex justify-center align-center"
+  >
+    <p>Something went wrong - Please refresh the page</p>
+  </div>
+
+  <div
+    *ngIf="!(hasError$ | async) && noTodosFound"
+    class="error-msg flex justify-center align-center"
+  >
+    <p>No todos found for the given search term.</p>
+  </div>
+  <ul class="todo-list" *ngIf="todos.length > 0">
+    <li class="todo-item flex" *ngFor="let todo of todos; let i = index">
       <span>{{ i + 1 }}.</span>
       <span class="title">{{ todo.title }}</span>
       <span

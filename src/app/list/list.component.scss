@@ -5,6 +5,15 @@
     padding: 2rem;
   }
 
+  .Loader,
+  .error-msg {
+    text-align: center;
+    height: 64vh;
+    p {
+      font-size: 2rem;
+    }
+  }
+
   .todo-list {
     height: 64vh;
     overflow-y: scroll;

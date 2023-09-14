@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ListService } from './list.service';
 import { Observable, Subject, map, startWith, switchMap } from 'rxjs';
 import { Todo } from './models';
@@ -7,28 +7,31 @@ import { Todo } from './models';
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
 })
-export class ListComponent {
-  private searchTerm$ = new Subject<string>();
-  todos$: Observable<Todo[]>;
+export class ListComponent implements OnInit {
+  allTodos: Todo[] = [];
+  todos: Todo[] = [];
+  noTodosFound = false;
+  isLoading$ = this.listService.isLoading;
+  hasError$ = this.listService.hasError;
 
-  constructor(private listService: ListService) {
-    this.todos$ = this.searchTerm$.pipe(
-      startWith(''), // Start with no filter
-      switchMap((term: string) =>
-        this.listService
-          .getList()
-          .pipe(
-            map((todos) =>
-              todos.filter((todo) =>
-                todo.title.toLowerCase().includes(term.toLowerCase())
-              )
-            )
-          )
-      )
-    );
+  constructor(private listService: ListService) {}
+
+  ngOnInit(): void {
+    this.listService.getList().subscribe((todos) => {
+      this.allTodos = todos;
+      this.todos = todos;
+    });
   }
 
   filter(searchTerm: string) {
-    this.searchTerm$.next(searchTerm);
+    if (!searchTerm) {
+      this.noTodosFound = false;
+      this.todos = [...this.allTodos];
+    } else {
+      this.todos = this.allTodos.filter((todo) =>
+        todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      this.noTodosFound = this.todos.length === 0;
+    }
   }
 }
