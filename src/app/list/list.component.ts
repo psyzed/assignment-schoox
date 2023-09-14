@@ -1,26 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ListService } from './list.service';
-import { Observable, Subject, map, startWith, switchMap } from 'rxjs';
 import { Todo } from './models';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'scx-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
 })
-export class ListComponent implements OnInit {
+export class ListComponent implements OnInit, OnDestroy {
   allTodos: Todo[] = [];
   todos: Todo[] = [];
   noTodosFound = false;
   isLoading$ = this.listService.isLoading;
   hasError$ = this.listService.hasError;
+  private subscriptions = new Subscription();
 
   constructor(private listService: ListService) {}
 
   ngOnInit(): void {
-    this.listService.getList().subscribe((todos) => {
-      this.allTodos = todos;
-      this.todos = todos;
-    });
+    this.subscriptions.add(
+      this.listService
+        .getList()
+        .pipe()
+        .subscribe((todos) => {
+          this.allTodos = todos;
+          this.todos = todos;
+        })
+    );
   }
 
   filter(searchTerm: string) {
@@ -33,5 +39,9 @@ export class ListComponent implements OnInit {
       );
       this.noTodosFound = this.todos.length === 0;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
